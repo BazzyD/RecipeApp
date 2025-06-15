@@ -3,6 +3,9 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-nativ
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AppLayout from '../components/AppLayout';
+import { useForm, Controller } from 'react-hook-form';
+import * as yup from 'yup';
+import { yupResolver } from '@hookform/resolvers/yup';
 type RootStackParamList = {
   Login: undefined;
   Register: undefined;
@@ -10,38 +13,66 @@ type RootStackParamList = {
 };
 
 export default function LoginScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+    const schema = yup.object().shape({
+  email: yup.string().email('Invalid email').required('Email is required'),
+  password: yup.string().required('Password is required'),
+});
 
-  const handleLogin = () => {
-    // TODO: validate & connect to Firebase Auth later
-    console.log('Logging in with:', { email, password });
-  };
+
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const {
+  control,
+  handleSubmit,
+  formState: { errors },
+} = useForm({
+  resolver: yupResolver(schema),
+});
+
+  const handleLogin = (data: { email: string; password: string }) => {
+  console.log('Logging in with:', data);
+};
 
   return (
         <AppLayout>
     <View style={styles.container}>
       <Text style={styles.title}>Welcome Back</Text>
 
+      <Controller
+  control={control}
+  name="email"
+  render={({ field: { onChange, value } }) => (
+    <>
       <TextInput
         placeholder="Email"
-        style={styles.input}
+        style={[styles.input, errors.email && styles.inputError]}
         keyboardType="email-address"
         autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
+        value={value}
+        onChangeText={onChange}
       />
+      {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
+    </>
+  )}
+/>
 
+<Controller
+  control={control}
+  name="password"
+  render={({ field: { onChange, value } }) => (
+    <>
       <TextInput
         placeholder="Password"
-        style={styles.input}
+        style={[styles.input, errors.password && styles.inputError]}
         secureTextEntry
-        value={password}
-        onChangeText={setPassword}
+        value={value}
+        onChangeText={onChange}
       />
+      {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
+    </>
+  )}
+/>
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
+      <TouchableOpacity style={styles.button} onPress={handleSubmit(handleLogin)}>
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
@@ -85,6 +116,14 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 16,
   },
+  inputError: {
+  borderColor: 'blue',
+},
+errorText: {
+  color: 'black',
+  marginBottom: 10,
+  marginLeft: 5,
+},
   registerText: {
     marginTop: 20,
     textAlign: 'center',
