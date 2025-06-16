@@ -1,7 +1,12 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Button } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { signOut } from 'firebase/auth';
+import { auth } from '../firebase/config';
+import { useAuthStore } from '../store/useAuthStore';
+
+import Toast from 'react-native-toast-message';
 
 type SideMenuProps = {
   onClose: () => void;
@@ -15,29 +20,66 @@ type RootStackParamList = {
 
 export default function SideMenu({ onClose }: SideMenuProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const user = useAuthStore((state) => state.user);
+  const setUser = useAuthStore((state) => state.setUser);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      onClose();
+    } catch (error: any) {
+      Toast.show({
+            type: 'error',
+            text1: 'Login failed',
+            text2: error.message,
+          });
+    }
+  };
 
   return (
     <View style={styles.overlay}>
       <View style={styles.menu}>
-
-<TouchableOpacity onPress={onClose}>
+        <TouchableOpacity onPress={onClose}>
           <Text style={styles.close}>Close ✖️</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.menuButton} onPress={() => { navigation.navigate('Register'); onClose(); }}>
-  <Text style={styles.menuButtonText}>Register</Text>
-</TouchableOpacity>
+        {!user ? (
+          <>
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={() => {
+                navigation.navigate('Register');
+                onClose();
+              }}
+            >
+              <Text style={styles.menuButtonText}>Register</Text>
+            </TouchableOpacity>
 
-<TouchableOpacity style={styles.menuButton} onPress={() => { navigation.navigate('Login'); onClose(); }}>
-  <Text style={styles.menuButtonText}>Login</Text>
-</TouchableOpacity>
-        
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={() => {
+                navigation.navigate('Login');
+                onClose();
+              }}
+            >
+              <Text style={styles.menuButtonText}>Login</Text>
+            </TouchableOpacity>
+          </>
+        ) : (
+          <>
+            <TouchableOpacity style={styles.menuButton} onPress={handleLogout}>
+              <Text style={styles.menuButtonText}>Logout</Text>
+            </TouchableOpacity>
+          </>
+        )}
       </View>
 
       <TouchableOpacity style={styles.background} onPress={onClose} />
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   overlay: {

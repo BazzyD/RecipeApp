@@ -53,7 +53,6 @@ export default function RegisterScreen() {
   try {
     await createUserWithEmailAndPassword(auth, data.email, data.password);
 
-    navigation.navigate('Login');
   } catch (error: any) {
     Toast.show({
       type: 'error',
@@ -143,6 +142,9 @@ export default function RegisterScreen() {
       <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
+      <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+              <Text style={styles.loginText}>Already have an account? <Text style={styles.loginLink}>Login</Text></Text>
+            </TouchableOpacity>
     </View>
     </AppLayout>
   );
@@ -188,5 +190,14 @@ export default function RegisterScreen() {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 16,
+  },
+  loginText: {
+    marginTop: 20,
+    textAlign: 'center',
+    color: '#555',
+  },
+  loginLink: {
+    color: '#4CAF50',
+    fontWeight: 'bold',
   },
 });
