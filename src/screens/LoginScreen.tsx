@@ -6,9 +6,17 @@ import AppLayout from '../components/AppLayout';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+
+import { signInWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase/config';
+
+import Toast from 'react-native-toast-message';
+
+
 type RootStackParamList = {
   Login: undefined;
   Register: undefined;
+  Home: undefined;
   // add other screens here
 };
 
@@ -28,8 +36,17 @@ export default function LoginScreen() {
   resolver: yupResolver(schema),
 });
 
-  const handleLogin = (data: { email: string; password: string }) => {
-  console.log('Logging in with:', data);
+  const handleLogin = async (data: { email: string; password: string }) => {
+  try {
+    await signInWithEmailAndPassword(auth, data.email, data.password);
+    navigation.navigate('Home'); // or wherever you want to redirect
+  } catch (error: any) {
+    Toast.show({
+      type: 'error',
+      text1: 'Login failed',
+      text2: error.message,
+    });
+  }
 };
 
   return (

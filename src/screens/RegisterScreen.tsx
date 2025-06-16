@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import AppLayout from '../components/AppLayout';
 import { useForm, Controller } from 'react-hook-form';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth } from '../firebase/config';
+
+import Toast from 'react-native-toast-message';
+
 
 // 1. Define Yup schema for validation
 const schema = yup.object().shape({
@@ -25,12 +32,14 @@ type FormData = {
   confirmPassword: string;
 };
 type RootStackParamList = {
-  Register: undefined;
+  Home: undefined;
   Login: undefined;
   // add other screens here
 };
 
+
 export default function RegisterScreen() {
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
  const {
     control,
     handleSubmit,
@@ -40,10 +49,19 @@ export default function RegisterScreen() {
   });
 
   // 3. On submit
-  const onSubmit = (data: FormData) => {
-    console.log('Register data:', data);
-    // proceed with Firebase or API call here
-  };
+  const onSubmit = async (data: { email: string; password: string }) => {
+  try {
+    await createUserWithEmailAndPassword(auth, data.email, data.password);
+
+    navigation.navigate('Login');
+  } catch (error: any) {
+    Toast.show({
+      type: 'error',
+      text1: 'Register failed',
+      text2: error.message,
+    });
+  }
+};
 
   return (
         <AppLayout>
@@ -129,6 +147,7 @@ export default function RegisterScreen() {
     </AppLayout>
   );
 }
+
 
   const styles = StyleSheet.create({
   container: {
