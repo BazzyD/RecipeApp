@@ -2,9 +2,9 @@
 
 
 # dependencies
-Server/node_modules/
-ReactNativeApp/src/firebase
-ReactNativeApp/node_modules/
+
+src/firebase
+node_modules/
 # Expo
 .expo/
 dist/
