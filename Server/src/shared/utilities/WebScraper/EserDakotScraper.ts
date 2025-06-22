@@ -1,15 +1,16 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+import { Recipe } from '../../entities/Recipe';
 import { RecipeIngredient } from '../../entities/RecipeIngredient';
 import { SubRecipe } from '../../entities/SubRecipe';
 import { instructionRecipe } from '../../entities/Instruction';
 
 export class EserDakotScraper {
-    async scrape(url: string) {
+    async scrape(url: string) : Promise<Recipe> {
         const { data } = await axios.get(url);
         const $ = cheerio.load(data);
         const recipeContent = $('.resipes__content');
-
+        const title = $('.banner_resipe__title').text().trim();
 
         // Extract ingredients — all <p> before <div class="h4">אופן ההכנה</div>
         // We'll get all <p> siblings between "רכיבים" and "אופן ההכנה"
@@ -65,8 +66,16 @@ export class EserDakotScraper {
             p = p.next();
         }
 
-
-        return { ingredients,SubRecipes, instructions };
+        const recipe: Recipe = {
+            id: null,
+            url: url,
+            title: title,
+            userId: null,
+            ingredients: ingredients,
+            subRecipes: SubRecipes,
+            instructions: instructions
+        };
+        return recipe;
     }    parseIngredient(line: string, order: number): {recipeIngredient : RecipeIngredient, newOrder: number } {
         const parts = line.trim().split(/\s+/);
 

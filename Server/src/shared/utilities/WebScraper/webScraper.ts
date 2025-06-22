@@ -7,16 +7,10 @@ export class WebScraper {
         const hostname = new URL(url).hostname;
         if (hostname === 'www.10dakot.co.il') {
             const scraper = new EserDakotScraper();
-            const  { ingredients,SubRecipes, instructions } = await scraper.scrape(url);
-            const recipe: Recipe = {
-                id: '',
-                url: url,
-                userId: null,
-                ingredients: ingredients,
-                subRecipes: SubRecipes,
-                instructions: instructions,
-            };
-            return recipe;
+            const  recipe = await scraper.scrape(url);
+            if (recipe)
+                return recipe;
+            throw new Error('Recipe not found');
         }
         else {
             throw new Error('Unsupported website');
