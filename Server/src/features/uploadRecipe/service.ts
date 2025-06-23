@@ -1,6 +1,6 @@
-import { WebScraper } from '../../shared/utilities/WebScraper/webScraper';
+import { WebScraperFactory } from '../../shared/utilities/WebScraper/webScraperFactory';
 import { RecipeRepository } from './repository';
-import { Recipe } from '../../shared/entities/Recipe';
+import { IWebScraper } from '../../shared/utilities/WebScraper/IWebScraper';
 
 
 export async function uploadRecipe(url: string) {
@@ -11,14 +11,14 @@ export async function uploadRecipe(url: string) {
         // fallback if somehow missing:
         throw new Error('Recipe exists but could not be fetched');
   }
-  const scraper = new WebScraper();
-  const webRecipe : Recipe = await scraper.scrape(url); // extract ingredients + instructions
+  const scraperFactory = new WebScraperFactory();
+  const scraper : IWebScraper = scraperFactory.CreateScraper(url)
+  const webRecipe = await scraper.scrape(url);
   const res = await repo.create(webRecipe);
   if (res) {
-    console.log("Recipe saved successfully");
+    return webRecipe;
   }
   else {
-    console.log("Recipe save failed");
+    throw new Error('Recipe could not be created');
   }
-  return webRecipe;
 }

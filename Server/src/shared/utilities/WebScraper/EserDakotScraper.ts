@@ -4,8 +4,9 @@ import { Recipe } from '../../entities/Recipe';
 import { RecipeIngredient } from '../../entities/RecipeIngredient';
 import { SubRecipe } from '../../entities/SubRecipe';
 import { instructionRecipe } from '../../entities/Instruction';
+import { IWebScraper } from './IWebScraper';
 
-export class EserDakotScraper {
+export class EserDakotScraper implements IWebScraper {
     async scrape(url: string) : Promise<Recipe> {
         const { data } = await axios.get(url);
         const $ = cheerio.load(data);
@@ -54,7 +55,7 @@ export class EserDakotScraper {
         }
 
         // Instructions are in the <ol> after "אופן ההכנה"
-        const instructions: instructionRecipe[] = [];
+        const instructions: instructionRecipe[] = this.parseInstructions(instructionsHeader);
 
         let p = instructionsHeader.next();
         order = 1;
@@ -76,7 +77,8 @@ export class EserDakotScraper {
             instructions: instructions
         };
         return recipe;
-    }    parseIngredient(line: string, order: number): {recipeIngredient : RecipeIngredient, newOrder: number } {
+    }    
+    parseIngredient(line: string, order: number): {recipeIngredient : RecipeIngredient, newOrder: number } {
         const parts = line.trim().split(/\s+/);
 
         // Case 1: amount + unit + name
@@ -108,6 +110,19 @@ export class EserDakotScraper {
             ingredientId: null,
                 order: order
         },newOrder:++order};
+    }
+
+    parseInstructions(lines : any): instructionRecipe[] {
+        const instructions: instructionRecipe[] = [];
+        let order = 1;
+        while (lines.length && !lines.is('div.h4')) {
+            if (lines.is('p') && lines.text().trim() !== "") {
+                instructions.push( {recipeId : null, content:lines.text().trim(), order:order });
+                ++order;
+            }
+            lines = lines.next();
+        }
+        return instructions;
     }
 
     parseSubRecipe(line: string, order : number): {subRecipe : SubRecipe, newOrder : number} {
