@@ -1,13 +1,15 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
+
 import { Recipe } from '../../entities/Recipe';
 import { RecipeIngredient } from '../../entities/RecipeIngredient';
 import { SubRecipe } from '../../entities/SubRecipe';
-import { instructionRecipe } from '../../entities/Instruction';
+import { Instruction } from '../../entities/Instruction';
 import { IWebScraper } from './IWebScraper';
 
+
 export class EserDakotScraper implements IWebScraper {
-    async scrape(url: string) : Promise<Recipe> {
+    async scrape(url: string): Promise<Recipe> {
         const { data } = await axios.get(url);
         const $ = cheerio.load(data);
         const recipeContent = $('.resipes__content');
@@ -29,43 +31,83 @@ export class EserDakotScraper implements IWebScraper {
         // Ingredients are <p> tags between ingredientsHeader and instructionsHeader
         const ingredients: RecipeIngredient[] = [];
         const SubRecipes: SubRecipe[] = [];
+        const instructions: Instruction[] = [];
         let order: number = 1;
+
         let current = ingredientsHeader.next();
 
         while (current.length && !current.is(instructionsHeader)) {
-            if (current.is('p')) {
+            // Check if this is a <ul> or <p>
+            if (current.is('ul')) {
+                // Extract all <li> inside
+                current.find('li').each((i, li) => {
+                    const fullText = $(li).text().trim();
+                    if (fullText.includes(':')) {
+                        const { subRecipe, newOrder } = this.parseSubRecipe(fullText, order);
+                        if (subRecipe) {
+                            SubRecipes.push(subRecipe);
+                            order = newOrder;
+                        }
+                    } else {
+                        const { recipeIngredient, newOrder } = this.parseIngredient(fullText, order);
+                        if (recipeIngredient.name) {
+                            ingredients.push(recipeIngredient);
+                            order = newOrder;
+                        }
+                    }
+                });
+            } else if (current.is('p') || current.is('li')) {
                 const fullText = current.text().trim();
-
                 if (fullText.includes(':')) {
-                    const {subRecipe,newOrder} = this.parseSubRecipe(fullText,order);
+                    const { subRecipe, newOrder } = this.parseSubRecipe(fullText, order);
                     if (subRecipe) {
                         SubRecipes.push(subRecipe);
                         order = newOrder;
                     }
                 } else {
-                    const {recipeIngredient,newOrder} = this.parseIngredient(fullText,order);
+                    const { recipeIngredient, newOrder } = this.parseIngredient(fullText, order);
                     if (recipeIngredient.name) {
                         ingredients.push(recipeIngredient);
-                        order= newOrder;
+                        order = newOrder;
                     }
                 }
             }
-            
+
+            current = current.next();
+        }
+        current = instructionsHeader.next();
+
+        // Instructions are in the <ol> after "אופן ההכנה"
+        current.is('div.h4')
+        while (current.length && !current.is('div.h4')) {
+            // Check if this is an <ol> or <p>
+            if (current.is('ol')) {
+                // Extract all <li> inside
+                current.find('li').each((i, li) => {
+                    const fullText = $(li).text().trim();
+                    if (fullText !== '') {
+                        instructions.push({
+                            recipeId: null,
+                            content: fullText,
+                            order: order++
+                        });
+                    }
+                });
+            } else if (current.is('p') || current.is('li')) {
+                const fullText = current.text().trim();
+                if (fullText !== '') {
+                    instructions.push({
+                        recipeId: null,
+                        content: fullText,
+                        order: order++
+                    });
+                }
+            }
+
             current = current.next();
         }
 
-        // Instructions are in the <ol> after "אופן ההכנה"
-        const instructions: instructionRecipe[] = this.parseInstructions(instructionsHeader);
 
-        let p = instructionsHeader.next();
-        order = 1;
-        while (p.length && !p.is('div.h4')) {
-            if (p.is('p') && p.text().trim() !== "") {
-                instructions.push( {recipeId : null, content:p.text().trim(), order:order });
-                ++order;
-            }
-            p = p.next();
-        }
 
         const recipe: Recipe = {
             id: null,
@@ -77,8 +119,8 @@ export class EserDakotScraper implements IWebScraper {
             instructions: instructions
         };
         return recipe;
-    }    
-    parseIngredient(line: string, order: number): {recipeIngredient : RecipeIngredient, newOrder: number } {
+    }
+    parseIngredient(line: string, order: number): { recipeIngredient: RecipeIngredient, newOrder: number } {
         const parts = line.trim().split(/\s+/);
 
         // Case 1: amount + unit + name
@@ -90,56 +132,49 @@ export class EserDakotScraper implements IWebScraper {
         if (isAmount) {
             return {
                 recipeIngredient: {
-                recipeId: null,
-                ingredientId: null,
-                amount: maybeAmount,
-                unit: maybeUnit,
-                name: parts.slice(2).join(' '),
-                order: order
-            }, newOrder: ++order
-        };
+                    recipeId: null,
+                    ingredientId: null,
+                    amount: maybeAmount,
+                    unit: maybeUnit,
+                    name: parts.slice(2).join(' '),
+                    order: order
+                }, newOrder: ++order
+            };
         }
 
         // Case 2: Just name
         return {
             recipeIngredient: {
-            amount: "1",
-            unit: null,
-            name: line.trim(),
-            recipeId: null,
-            ingredientId: null,
+                amount: "1",
+                unit: null,
+                name: line.trim(),
+                recipeId: null,
+                ingredientId: null,
                 order: order
-        },newOrder:++order};
+            }, newOrder: ++order
+        };
     }
 
-    parseInstructions(lines : any): instructionRecipe[] {
-        const instructions: instructionRecipe[] = [];
-        let order = 1;
-        while (lines.length && !lines.is('div.h4')) {
-            if (lines.is('p') && lines.text().trim() !== "") {
-                instructions.push( {recipeId : null, content:lines.text().trim(), order:order });
-                ++order;
-            }
-            lines = lines.next();
-        }
-        return instructions;
-    }
 
-    parseSubRecipe(line: string, order : number): {subRecipe : SubRecipe, newOrder : number} {
+
+
+
+
+    parseSubRecipe(line: string, order: number): { subRecipe: SubRecipe, newOrder: number } {
         const subRecipeOrder = order;
         order++;
         const [groupTitle, rest] = line.split(':', 2);
         const parts = rest.split(',').map(s => s.trim());
         let ingredients: RecipeIngredient[] = [];
         for (const part of parts) {
-            const {recipeIngredient, newOrder} = this.parseIngredient(part, order);
+            const { recipeIngredient, newOrder } = this.parseIngredient(part, order);
             if (recipeIngredient.name) {
                 ingredients.push(recipeIngredient);
                 order = newOrder;
             }
         }
         return {
-            
+
             subRecipe: {
                 id: null,
                 recipeId: null,
@@ -149,6 +184,7 @@ export class EserDakotScraper implements IWebScraper {
             }, newOrder: ++order
         };
     }
+    parseInstructions(): Instruction[] { return [] }
 
 }
 

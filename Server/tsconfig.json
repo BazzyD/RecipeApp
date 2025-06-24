@@ -6,9 +6,10 @@
     "resolveJsonModule": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["src","src/tests"],
+  "include": ["src","src/tests", "src/types/express"],
   "exclude": ["node_modules"]
 }

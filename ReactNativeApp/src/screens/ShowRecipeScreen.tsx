@@ -17,7 +17,7 @@ export default function ShowRecipeScreen({ route }: any) {
       <Text style={styles.sectionTitle}>Ingredients</Text>
       {ingredients.map((ing: any, idx: number) => (
         <Text key={idx} style={styles.text}>
-          • {ing.amount} {ing.unit} {ing.name}
+            {ing.amount} {ing.unit} {ing.name}
         </Text>
       ))}
     </>

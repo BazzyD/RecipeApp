@@ -6,4 +6,4 @@ export const InstructionSchema = z.object({
     order: z.number().int().min(1),
 });
 
-export type instructionRecipe = z.infer<typeof InstructionSchema>;
+export type Instruction = z.infer<typeof InstructionSchema>;

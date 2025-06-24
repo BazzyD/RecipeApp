@@ -2,10 +2,9 @@ import { z } from 'zod';
 import { RecipeIngredientSchema } from './RecipeIngredient';
 import { SubRecipeSchema } from './SubRecipe';
 import { InstructionSchema } from './Instruction';
-import { title } from 'process';
 
 export const RecipeSchema = z.object({
-  id: z.string().uuid().nullable(),
+  id: z.string().uuid().nullable().optional(),
   url: z.string().min(1),
   title: z.string().min(1),
   userId: z.string().uuid().nullable(),

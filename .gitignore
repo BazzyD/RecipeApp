@@ -5,6 +5,7 @@
 
 src/firebase
 node_modules/
+serviceAccountKey.json
 # Expo
 .expo/
 dist/

@@ -3,7 +3,7 @@ import { RecipeRepository } from './repository';
 import { IWebScraper } from '../../shared/utilities/WebScraper/IWebScraper';
 
 
-export async function uploadRecipe(url: string) {
+export async function uploadRecipe(url: string, userId: string | null ) {
   const repo = new RecipeRepository();
   if (await repo.exists(url)) {
         const existingRecipe = await repo.get(url);
@@ -14,6 +14,7 @@ export async function uploadRecipe(url: string) {
   const scraperFactory = new WebScraperFactory();
   const scraper : IWebScraper = scraperFactory.CreateScraper(url)
   const webRecipe = await scraper.scrape(url);
+  webRecipe.userId = userId ?? null;
   const res = await repo.create(webRecipe);
   if (res) {
     return webRecipe;
