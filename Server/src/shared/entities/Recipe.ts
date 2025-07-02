@@ -11,6 +11,7 @@ export const RecipeSchema = z.object({
   ingredients: z.array(RecipeIngredientSchema),
     subRecipes: z.array(SubRecipeSchema),
     instructions: z.array(InstructionSchema),
+  image: z.string().nullable().optional(),
 });
 
 export type Recipe = z.infer<typeof RecipeSchema>;
