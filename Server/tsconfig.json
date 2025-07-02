@@ -8,8 +8,14 @@
     "moduleResolution": "node",
     "typeRoots": ["./node_modules/@types", "./src/types"],
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "noImplicitAny": true,
+    "allowJs": true,
+    "paths": {
+      "ml-knn": ["./src/types/ml-knn"]
+    }
   },
-  "include": ["src","src/tests", "src/types/express"],
+  "include": ["src","src/tests", "src/types/express", "src/types/ml-knn"],
   "exclude": ["node_modules"]
 }
+
