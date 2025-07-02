@@ -1,10 +1,17 @@
 import { SearchRepository } from './repository';
 import { findSimilarRecipes } from './utilities/RecipeKNN';
 
+type VectorRecipe = {
+    id: string;
+    ingredients: string[];
+};
+
 
 type Recipe = {
-  id: string;
-  ingredients: string[];
+    id: string;
+    url: string;
+    title: string;
+    image: string;
 };
 
 export async function SearchRecipe(recipeId: string) {
@@ -14,18 +21,16 @@ export async function SearchRecipe(recipeId: string) {
 
     //get all recipes
     let { targetRecipe, recipes } = await repo.getAll(recipeId);
-    targetRecipe = targetRecipe as Recipe;
+    targetRecipe = targetRecipe as VectorRecipe;
     if (!targetRecipe || !recipes || recipes.length === 0) {
       throw new Error('Recipe does not exist');
     }
     //find the closest recipes
-    const Recommendation = findSimilarRecipes(targetRecipe, recipes, 10);
-
-    //return the closest recipes
-    if (Recommendation) {
-      return Recommendation;
-    }
-    else {
+    try {
+      const RecommendationIds = findSimilarRecipes(targetRecipe, recipes, 10);
+      const recommendations = await repo.getRecipesById(RecommendationIds);
+      return recommendations;
+    } catch (e) {
       throw new Error('KNN algorithem error');
     }
 

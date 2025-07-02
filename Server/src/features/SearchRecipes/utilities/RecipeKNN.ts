@@ -11,7 +11,7 @@ function jaccardDistance(a: Set<string>, b: Set<string>): number {
   return 1 - intersectionSize / unionSize;
 }
 
-function findSimilarRecipes(targetRecipe: Recipe, recipes: Recipe[], k: number = 3): Recipe[] {
+function findSimilarRecipes(targetRecipe: Recipe, recipes: Recipe[], k: number = 3): string[] {
   const targetSet = new Set(targetRecipe.ingredients);
 
   const scoredRecipes = recipes
@@ -24,7 +24,7 @@ function findSimilarRecipes(targetRecipe: Recipe, recipes: Recipe[], k: number =
     .filter(entry => entry.distance < 0.99) // filter out recipes that are too different
     .sort((a, b) => a.distance - b.distance) // smaller distance = more similar
     .slice(0, k)
-    .map(entry => entry.recipe);
+    .map(entry => entry.recipe.id);
 
   return scoredRecipes;
 }
