@@ -12,6 +12,6 @@ app.use(express.json());
 app.use('/api', uploadRoutes); // api/upload
 app.use('/api', searchRoutes); // api/search
 
-app.listen(PORT, () => {
+app.listen(3000, '0.0.0.0', () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
