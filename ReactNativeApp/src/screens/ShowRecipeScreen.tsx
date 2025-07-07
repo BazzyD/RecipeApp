@@ -1,10 +1,34 @@
 import React from 'react';
-import { Text, StyleSheet, View, ScrollView } from 'react-native';
+import { Text, StyleSheet, View, ScrollView, TouchableOpacity } from 'react-native';
 import AppLayout from '../components/AppLayout';
+import axios from 'axios';
+import { useNavigation } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { searchRecipes } from '../API/searchRecipesApi';
+type RootStackParamList = {
+  Home: undefined;
+  UploadFromWeb: undefined;
+  Login: undefined;
+  Register: undefined;
+  Recipes: { recipes: { id: number; title: string; image: string }[] };
+};
 
 export default function ShowRecipeScreen({ route }: any) {
+
+
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { recipe } = route.params;
   const { ingredients, subRecipes, instructions } = recipe;
+
+  const fetchRecipes = async () => {
+    try {
+      const recipes = await searchRecipes(recipe.id);
+
+      navigation.navigate('Recipes', { recipes  }); // pass recipes to next screen
+    } catch (error) {
+      console.error('Failed to fetch recipes:', error);
+    }
+  };
 
   return (
     <AppLayout>
@@ -63,7 +87,9 @@ export default function ShowRecipeScreen({ route }: any) {
   <Text style={styles.placeholder}>No instructions provided.</Text>
 )}
 </ScrollView>
-
+      <TouchableOpacity style={styles.button} onPress={fetchRecipes}>
+              <Text style={styles.buttonText}>Show Recipes</Text>
+            </TouchableOpacity>
     </AppLayout>
   );
 }
@@ -100,5 +126,17 @@ const styles = StyleSheet.create({
   color: '#777',
   marginTop: 4,
 },
+button: {
+    backgroundColor: '#0F200D',
+    padding: 15,
+    borderRadius: 8,
+    marginTop: 10,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
 
 });

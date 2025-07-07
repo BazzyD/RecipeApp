@@ -9,6 +9,7 @@ import LoginScreen from './src/screens/LoginScreen';
 import UploadFromWebScreen from './src/screens/UploadFromWebScreen';
 import UploadRecipeScreen from './src/screens/UploadRecipeScreen';
 import ShowRecipeScreen from './src/screens/ShowRecipeScreen';
+import RecipesScreen from './src/screens/RecipesScreen';
 
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth}  from './src/firebase/config';
@@ -41,6 +42,7 @@ export default function App() {
             <Stack.Screen name="ShowRecipe" component={ShowRecipeScreen}/>
             <Stack.Screen name="UploadRecipe" component={UploadRecipeScreen}/>
             <Stack.Screen name="UploadFromWeb" component={UploadFromWebScreen}/>
+            <Stack.Screen name="Recipes" component={RecipesScreen} />
           </>
         ) : (
           <>
@@ -50,6 +52,7 @@ export default function App() {
             <Stack.Screen name="ShowRecipe" component={ShowRecipeScreen}/>
             <Stack.Screen name="UploadRecipe" component={UploadRecipeScreen}/>
             <Stack.Screen name="UploadFromWeb" component={UploadFromWebScreen}/>
+            <Stack.Screen name="Recipes" component={RecipesScreen} />
           </>
         )}
       </Stack.Navigator>

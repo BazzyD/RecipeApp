@@ -16,7 +16,7 @@ const getIp = () => {
 
 
 
-export const uploadRecipeFromWeb = async (url: string) => {
+export const searchRecipes = async (recipeId: string) => {
 
 const ip = getIp();
 
@@ -30,9 +30,8 @@ const BASE_URL = `http://${ip}:3000`;
     const idToken = await user.getIdToken();
     headers['Authorization'] = `Bearer ${idToken}`;
   }
-  const response = await axios.post(
-    BASE_URL.concat("/api/upload"),
-    { url },
+  const response = await axios.get(
+    BASE_URL.concat("/api/search?recipeId=").concat(recipeId),
     { timeout: 10000 }
   );
 
