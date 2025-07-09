@@ -1,12 +1,12 @@
-import { WebScraperFactory } from '../../shared/utilities/WebScraper/webScraperFactory';
+import { WebScraperFactory } from './WebScraper/webScraperFactory';
 import { RecipeRepository } from './repository';
-import { IWebScraper } from '../../shared/utilities/WebScraper/IWebScraper';
+import { IWebScraper } from './WebScraper/IWebScraper';
 
 
 export async function uploadRecipe(url: string, userId: string | null ) {
   const repo = new RecipeRepository();
   if (await repo.exists(url)) {
-        const existingRecipe = await repo.get(url);
+        const existingRecipe = await repo.getByUrl(url);
         if (existingRecipe) return existingRecipe;
         // fallback if somehow missing:
         throw new Error('Recipe exists but could not be fetched');
