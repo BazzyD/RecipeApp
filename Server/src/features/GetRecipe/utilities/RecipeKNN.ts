@@ -1,5 +1,3 @@
-import { forEach } from "mathjs";
-
 type Recipe = {
   id: string;
   ingredients: string[];

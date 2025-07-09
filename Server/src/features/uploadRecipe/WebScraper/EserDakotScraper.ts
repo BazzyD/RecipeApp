@@ -1,10 +1,10 @@
 import axios from 'axios';
 import * as cheerio from 'cheerio';
 
-import { Recipe } from '../../entities/Recipe';
-import { RecipeIngredient } from '../../entities/RecipeIngredient';
-import { SubRecipe } from '../../entities/SubRecipe';
-import { Instruction } from '../../entities/Instruction';
+import { Recipe } from '../../../shared/entities/Recipe';
+import { RecipeIngredient } from '../../../shared/entities/RecipeIngredient';
+import { SubRecipe } from '../../../shared/entities/SubRecipe';
+import { Instruction } from '../../../shared/entities/Instruction';
 import { IWebScraper } from './IWebScraper';
 
 
