@@ -5,12 +5,13 @@ import axios from 'axios';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { searchRecipes } from '../API/searchRecipesApi';
+import Toast from 'react-native-toast-message';
 type RootStackParamList = {
   Home: undefined;
   UploadFromWeb: undefined;
   Login: undefined;
   Register: undefined;
-  Recipes: { recipes: { id: number; title: string; image: string }[] };
+  Recipes: { recipes: { id: string; title: string; image: string }[] };
 };
 
 export default function ShowRecipeScreen({ route }: any) {
@@ -25,8 +26,12 @@ export default function ShowRecipeScreen({ route }: any) {
       const recipes = await searchRecipes(recipe.id);
 
       navigation.navigate('Recipes', { recipes  }); // pass recipes to next screen
-    } catch (error) {
-      console.error('Failed to fetch recipes:', error);
+    } catch (error : any) {
+      Toast.show({
+            type: 'error',
+            text1: 'Recomendation Error',
+            text2: error.message,
+          });
     }
   };
 

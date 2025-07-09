@@ -16,7 +16,7 @@ const getIp = () => {
 
 
 
-export const searchRecipes = async (recipeId: string) => {
+export const getRecipeById = async (recipeId: string) => {
 
 const ip = getIp();
 
@@ -31,8 +31,8 @@ const BASE_URL = `http://${ip}:3000`;
     headers['Authorization'] = `Bearer ${idToken}`;
   }
   const response = await axios.get(
-    BASE_URL.concat("/api/search?recipeId=").concat(recipeId),
-    { timeout: 20000 }
+    BASE_URL.concat("/api/recipe?recipeId=").concat(recipeId),
+    { timeout: 10000 }
   );
 
   // Success: response.data contains the JSON
