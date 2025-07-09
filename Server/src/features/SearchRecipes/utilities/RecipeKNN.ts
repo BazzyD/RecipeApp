@@ -18,7 +18,6 @@ function findSimilarRecipes(targetRecipe: Recipe, recipes: Recipe[], k: number =
     .map(recipe => {
       const otherSet = new Set(recipe.ingredients);
       const distance = jaccardDistance(targetSet, otherSet);
-      console.log(`Recipe: ${recipe.id}, Distance: ${distance}`);
       return { recipe, distance };
     })
     .filter(entry => entry.distance < 0.99) // filter out recipes that are too different

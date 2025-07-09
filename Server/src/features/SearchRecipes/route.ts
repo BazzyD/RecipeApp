@@ -4,8 +4,7 @@ const router = express.Router();
 
 router.get('/search', (req, res) => {
   searchRecipeController(req, res).catch(err => {
-    console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ message: err.message || 'Internal Server Error' });
   });
 });
 

@@ -4,11 +4,13 @@ import express from 'express';
 import uploadRoutes from './features/uploadRecipe/route';
 import searchRoutes from './features/SearchRecipes/route';
 import getRoutes from './features/GetRecipe/route';
+import cors from 'cors';
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(cors());
 
 app.use('/api', uploadRoutes); // api/upload
 app.use('/api', searchRoutes); // api/search
