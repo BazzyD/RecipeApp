@@ -1,27 +1,18 @@
 import { useAuthStore } from './firebase/useAuthStore'; // adjust path
 import { User } from 'firebase/auth';
 import axios from 'axios';
-import Constants from 'expo-constants';
 
 
-const getIp = () => {
-  const config = Constants.expoConfig as any; // cast to any to bypass typings
-  if (!config) return null;
 
-  const debuggerHost = config.debuggerHost ?? config.hostUri ?? (config.extra?.debuggerHost);
-  if (!debuggerHost) return null;
-
-  return debuggerHost.split(':')[0];
-};
+const BASE_URL = __DEV__
+  ? 'http://localhost:3000'            // local dev server
+  : 'https://recipeapp-a8po.onrender.com';  // production Render URL
 
 
 
 export const getRecipeById = async (recipeId: string) => {
-
-const ip = getIp();
-
-const BASE_URL = `http://${ip}:3000`;
   const user: User | null = useAuthStore.getState().user;
+
   const headers: any = {
     'Content-Type': 'application/json',
   };
@@ -31,7 +22,7 @@ const BASE_URL = `http://${ip}:3000`;
     headers['authorization'] = `Bearer ${idToken}`;
   }
   const response = await axios.get(
-    BASE_URL.concat("/api/recipe?recipeId=").concat(recipeId),
+    `${BASE_URL}/api/recipe?recipeId=${recipeId}`,
     { 
       headers,
       timeout: 10000 
@@ -45,11 +36,8 @@ const BASE_URL = `http://${ip}:3000`;
 }
 
 export const uploadRecipeFromWeb = async (url: string) => {
-
-const ip = getIp();
-
-const BASE_URL = `http://${ip}:3000`;
   const user: User | null = useAuthStore.getState().user;
+
   const headers: any = {'Content-Type': 'application/json' };
 
   if (user) {
@@ -58,7 +46,7 @@ const BASE_URL = `http://${ip}:3000`;
   }
 
   const response = await axios.post(
-    BASE_URL.concat("/api/upload"),
+    `${BASE_URL}/api/upload`,
     { url },
     { 
       headers,
@@ -70,11 +58,8 @@ const BASE_URL = `http://${ip}:3000`;
 }
 
 export const searchRecipes = async (recipeId: string) => {
-
-const ip = getIp();
-
-const BASE_URL = `http://${ip}:3000`;
   const user: User | null = useAuthStore.getState().user;
+
   const headers: any = {
     'Content-Type': 'application/json',
   };
@@ -84,7 +69,7 @@ const BASE_URL = `http://${ip}:3000`;
     headers['authorization'] = `Bearer ${idToken}`;
   }
   const response = await axios.get(
-    BASE_URL.concat("/api/search?recipeId=").concat(recipeId),
+    `${BASE_URL}/api/search?recipeId=${recipeId}`,
     { headers,
       timeout: 20000 }
   );
