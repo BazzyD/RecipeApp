@@ -12,7 +12,7 @@ router.post('/upload', authenticateFirebase, async (req, res) => {
     if (!recipeId) {
       throw new Error('Missing recipeId');
     }
-
+  console.log('recipeId:', recipeId);
   uploadRecipeController(req, res).catch(err => {
     console.log(err);
     res.status(500).json({ error: err.message });
