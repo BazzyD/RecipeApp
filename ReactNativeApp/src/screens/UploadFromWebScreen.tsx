@@ -1,44 +1,43 @@
 import React, { useState } from 'react';
-import {
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  View,
-  TextInput,
-  Linking,
-} from 'react-native';
+import { Text, TouchableOpacity, StyleSheet, View, TextInput, Linking, ActivityIndicator } from 'react-native';
 import AppLayout from '../components/AppLayout';
-import { Ionicons } from '@expo/vector-icons'; // For Expo, or use react-native-vector-icons
+
+import { Ionicons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
+
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { uploadRecipeFromWeb } from '../API/uploadRecipeApi';
+import { uploadRecipeFromWeb } from '../ApiRequestSender';
 
 type RootStackParamList = {
   Home: undefined;
   ShowRecipe: { recipe: any };
 };
+
 export default function UploadFromWebScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [url, setUrl] = useState('');
-
+  const [loading, setLoading] = useState(false);
   const handleOpenBrowser = () => {
     Linking.openURL('https://www.10dakot.co.il');
   };
 
   const handleUpload = async () => {
-  try {
-    const result = await uploadRecipeFromWeb(url);
-    navigation.navigate('ShowRecipe', { recipe: result });
-  } catch (err: any) {
-    Toast.show({
-          type: 'error',
-                text1: 'Recipe upload failed',
-                text2: err.message,
-        });
-  }
-};
+    setLoading(true);
+    try {
+      const result = await uploadRecipeFromWeb(url);
+      navigation.navigate('ShowRecipe', { recipe: result });
+    } catch (err: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Recipe upload failed',
+        text2: err.message,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <AppLayout>
@@ -62,6 +61,19 @@ export default function UploadFromWebScreen() {
       <TouchableOpacity style={styles.uploadButton} onPress={handleUpload}>
         <Text style={styles.uploadButtonText}>Upload</Text>
       </TouchableOpacity>
+      {loading && (
+  <View style={{
+    position: 'absolute',
+    top: 0, left: 0, right: 0, bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+  }}>
+    <ActivityIndicator size="large" color="#fff" />
+    <Text style={{ color: '#fff', marginTop: 10 }}>Uploading recipe...</Text>
+  </View>
+)}
     </AppLayout>
   );
 }

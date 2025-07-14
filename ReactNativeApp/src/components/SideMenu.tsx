@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { signOut } from 'firebase/auth';
 import { auth } from '../firebase/config';
-import { useAuthStore } from '../store/useAuthStore';
+import { useAuthStore } from '../firebase/useAuthStore';
 
 import Toast from 'react-native-toast-message';
 
@@ -16,6 +16,8 @@ type RootStackParamList = {
   Home: undefined;
   Register: undefined;
   Login: undefined;
+  UploadRecipe: undefined;
+  UploadFromWeb: undefined;
 };
 
 export default function SideMenu({ onClose }: SideMenuProps) {
@@ -44,7 +46,33 @@ export default function SideMenu({ onClose }: SideMenuProps) {
           <Text style={styles.close}>Close ✖️</Text>
         </TouchableOpacity>
 
-        {!user ? (
+        {user ?   (
+          <>
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={() => {
+                navigation.navigate('UploadRecipe');
+                onClose();
+              }}
+            >
+              <Text style={styles.menuButtonText}>Upload Recipe</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.menuButton}
+              onPress={() => {
+                navigation.navigate('UploadFromWeb');
+                onClose();
+              }}
+            >
+              <Text style={styles.menuButtonText}>Upload Recipe From Web</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.menuButton} onPress={handleLogout}>
+              <Text style={styles.menuButtonText}>Logout</Text>
+            </TouchableOpacity>
+            
+          </>
+        ) :(
           <>
             <TouchableOpacity
               style={styles.menuButton}
@@ -66,13 +94,8 @@ export default function SideMenu({ onClose }: SideMenuProps) {
               <Text style={styles.menuButtonText}>Login</Text>
             </TouchableOpacity>
           </>
-        ) : (
-          <>
-            <TouchableOpacity style={styles.menuButton} onPress={handleLogout}>
-              <Text style={styles.menuButtonText}>Logout</Text>
-            </TouchableOpacity>
-          </>
-        )}
+        )
+        }
       </View>
 
       <TouchableOpacity style={styles.background} onPress={onClose} />

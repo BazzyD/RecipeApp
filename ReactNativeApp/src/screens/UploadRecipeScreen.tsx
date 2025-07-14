@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, StyleSheet, View } from 'react-native';
 import AppLayout from '../components/AppLayout';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
-import { Ionicons } from '@expo/vector-icons'; // 👈 for Expo users
+import { Ionicons } from '@expo/vector-icons'; 
 type RootStackParamList = {
   Home: undefined;
   UploadFromWeb: undefined;
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: 'center',  // centers vertically
-    alignItems: 'center',      // centers horizontally
+    justifyContent: 'center',
+    alignItems: 'center',     
   },
 });

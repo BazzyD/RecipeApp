@@ -13,7 +13,7 @@ import RecipesScreen from './src/screens/RecipesScreen';
 
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth}  from './src/firebase/config';
-import { useAuthStore } from './src/store/useAuthStore'; // we'll create this
+import { useAuthStore } from './src/firebase/useAuthStore';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,7 +35,7 @@ export default function App() {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName={user ? 'Home' : 'Home'}>
+      <Stack.Navigator initialRouteName={user ? 'Home' : "Login"}>
         {user ? (
           <>
             <Stack.Screen name="Home" component={HomeScreen} />
@@ -46,13 +46,8 @@ export default function App() {
           </>
         ) : (
           <>
-          <Stack.Screen name="Home" component={HomeScreen}/>
             <Stack.Screen name="Login" component={LoginScreen} />
             <Stack.Screen name="Register" component={RegisterScreen} />
-            <Stack.Screen name="ShowRecipe" component={ShowRecipeScreen}/>
-            <Stack.Screen name="UploadRecipe" component={UploadRecipeScreen}/>
-            <Stack.Screen name="UploadFromWeb" component={UploadFromWebScreen}/>
-            <Stack.Screen name="Recipes" component={RecipesScreen} />
           </>
         )}
       </Stack.Navigator>

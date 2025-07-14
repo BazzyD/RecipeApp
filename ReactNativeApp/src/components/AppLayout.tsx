@@ -1,30 +1,45 @@
-import React , { useState } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import SideMenu from './SideMenu';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+
+import { auth } from '../firebase/config';
+import { useAuthStore } from '../firebase/useAuthStore';
 type AppLayoutProps = {
   children: React.ReactNode;
 };
 
-
+type RootStackParamList = {
+  Home: undefined;
+};
 export default function AppLayout({ children }: AppLayoutProps) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const user = useAuthStore((state) => state.user);
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   return (
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => setMenuOpen(true)}>
-  <Text style={styles.menu}>☰</Text>
-</TouchableOpacity>
+          <Text style={styles.menu}>☰</Text>
+        </TouchableOpacity>
         <View style={styles.logoContainer}>
-          {/* Replace with your logo image if needed */}
-          <Image source={require('../../assets/icon.png')} style={styles.logo} />
-          <Text style={styles.title}>From List to Recipe</Text>
+          <TouchableOpacity style={styles.logoContainer} onPress={() => {
+            if(user)
+              navigation.navigate('Home')
+          }
+            }>
+            {/* Replace with your logo image if needed */}
+            <Image source={require('../../assets/icon.png')} style={styles.logo} />
+            <Text style={styles.title}>Recipe Matcher</Text>
+          </TouchableOpacity>
         </View>
       </View>
 
       {/* Content area */}
       <View style={styles.content}>{children}</View>
-{menuOpen && <SideMenu onClose={() => setMenuOpen(false)} />}
+      {menuOpen && <SideMenu onClose={() => setMenuOpen(false)} />}
     </View>
   );
 }

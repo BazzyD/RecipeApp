@@ -4,7 +4,7 @@ import AppLayout from '../components/AppLayout';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { useRoute } from '@react-navigation/native';
-import { getRecipeById } from '../API/getRecipeApi';
+import { getRecipeById } from '../ApiRequestSender';
 import Toast from 'react-native-toast-message';
 type RootStackParamList = {
   Home: undefined;
