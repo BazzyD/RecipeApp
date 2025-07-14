@@ -4,7 +4,7 @@ import axios from 'axios';
 
 
 
-const BASE_URL = 'https://recipeapp-a8po.onrender.com';
+const BASE_URL = 'https://4d38efb49ce2.ngrok-free.app';
 
 
 
