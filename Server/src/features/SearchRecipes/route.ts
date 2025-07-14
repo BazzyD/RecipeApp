@@ -4,7 +4,7 @@ import { authenticateFirebase } from '../../shared/middleware/authenticationFire
 
 const router = express.Router();
 
-router.get('/search', authenticateFirebase, (req, res) => {
+router.get('/search', authenticateFirebase, async (req, res) => {
   searchRecipeController(req, res).catch(err => {
     res.status(500).json({ message: err.message});
   });

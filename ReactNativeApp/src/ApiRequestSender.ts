@@ -4,9 +4,7 @@ import axios from 'axios';
 
 
 
-const BASE_URL = __DEV__
-  ? 'http://localhost:3000'            // local dev server
-  : 'https://recipeapp-a8po.onrender.com';  // production Render URL
+const BASE_URL = 'https://recipeapp-a8po.onrender.com';
 
 
 

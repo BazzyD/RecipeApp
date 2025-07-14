@@ -3,9 +3,18 @@ import { uploadRecipeController } from './controller';
 import { authenticateFirebase } from '../../shared/middleware/authenticationFirebase'
 const router = express.Router();
 
-router.post('/upload', authenticateFirebase,(req, res) => {
+router.post('/upload', authenticateFirebase, async (req, res) => {
+  console.log('Incoming request to /api/upload');
+    console.log('Query:', req.query);
+    console.log('Headers:', req.headers);
+
+    const recipeId = req.query.recipeId as string;
+    if (!recipeId) {
+      throw new Error('Missing recipeId');
+    }
+    
   uploadRecipeController(req, res).catch(err => {
-    console.error(err);
+    console.log(err);
     res.status(500).json({ error: err.message });
   });
 });
