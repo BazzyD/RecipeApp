@@ -1,7 +1,7 @@
-import { Instruction} from "../../entities/Instruction";
-import { Recipe } from "../../entities/Recipe";
-import { RecipeIngredient } from "../../entities/RecipeIngredient";
-import { SubRecipe } from "../../entities/SubRecipe";
+import { Instruction } from "../../../shared/entities/Instruction";
+import { Recipe } from "../../../shared/entities/Recipe";
+import { RecipeIngredient } from "../../../shared/entities/RecipeIngredient";
+import { SubRecipe } from "../../../shared/entities/SubRecipe";
 
 export interface IWebScraper{
     scrape(url: string) : Promise<Recipe>;
