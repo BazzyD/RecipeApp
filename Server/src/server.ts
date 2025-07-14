@@ -10,12 +10,13 @@ const app = express();
 const PORT = 3000;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors( { origin: 'http://localhost:3000',
+  allowedHeaders: ['Content-Type', 'Authorization'],}));
 
 app.use('/api', uploadRoutes); // api/upload
 app.use('/api', searchRoutes); // api/search
 app.use('/api', getRoutes); // api/get
 
-app.listen(3000, '0.0.0.0', () => {
+app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });

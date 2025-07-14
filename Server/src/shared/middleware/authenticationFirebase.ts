@@ -5,8 +5,7 @@ export async function authenticateFirebase(req: Request, res: Response, next: Ne
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    req.user = null; // <-- just mark user as null
-    return next();   // continue without throwing
+    throw new Error('No token provided');
   }
 
   const idToken = authHeader.split('Bearer ')[1];
@@ -16,8 +15,7 @@ export async function authenticateFirebase(req: Request, res: Response, next: Ne
     req.user = decodedToken;
     next();
   } catch (error) {
-    console.error('Token verification failed:', error);
-    req.user = null;
-    next(); // still allow through
+    throw new Error('user not  authenticated');;
+
   }
 }
