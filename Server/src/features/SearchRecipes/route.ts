@@ -6,7 +6,7 @@ const router = express.Router();
 
 router.get('/search', authenticateFirebase, (req, res) => {
   searchRecipeController(req, res).catch(err => {
-    res.status(500).json({ message: err.message || 'Internal Server Error' });
+    res.status(500).json({ message: err.message});
   });
 });
 

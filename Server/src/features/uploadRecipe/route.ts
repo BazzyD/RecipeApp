@@ -6,7 +6,7 @@ const router = express.Router();
 router.post('/upload', authenticateFirebase,(req, res) => {
   uploadRecipeController(req, res).catch(err => {
     console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: err.message });
   });
 });
 
