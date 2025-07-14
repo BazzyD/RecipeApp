@@ -7,12 +7,12 @@ router.post('/upload', authenticateFirebase, async (req, res) => {
   console.log('Incoming request to /api/upload');
     console.log('Query:', req.query);
     console.log('Headers:', req.headers);
-
-    const recipeId = req.query.recipeId as string;
+  console.log('Body:', req.body);
+    const recipeId = req.body.url as string;
     if (!recipeId) {
       throw new Error('Missing recipeId');
     }
-    
+
   uploadRecipeController(req, res).catch(err => {
     console.log(err);
     res.status(500).json({ error: err.message });
