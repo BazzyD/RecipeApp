@@ -2,10 +2,15 @@
 
 
 # dependencies
+    
+ReactNativeApp/app.json
+ReactNativeApp/eas.json
 
-src/firebase
+ReactNativeApp/src/firebase/config.ts
+Server/src/shared/firebase/serviceAccountKey.json
 node_modules/
-serviceAccountKey.json
+
+
 # Expo
 .expo/
 dist/
@@ -36,6 +41,7 @@ yarn-error.*
 
 # local env files
 .env*.local
+
 
 # typescript
 *.tsbuildinfo

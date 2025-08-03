@@ -13,8 +13,18 @@ import { auth } from '../firebase/config';
 
 import Toast from 'react-native-toast-message';
 
+type FormData = {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+};
+type RootStackParamList = {
+  Home: undefined;
+  Login: undefined;
+};
 
-// 1. Define Yup schema for validation
+// Define validation schema using Yup
 const schema = yup.object().shape({
   name: yup.string().required('Name is required'),
   email: yup.string().email('Invalid email').required('Email is required'),
@@ -25,39 +35,28 @@ const schema = yup.object().shape({
     .required('Please confirm your password'),
 });
 
-type FormData = {
-  name: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
-type RootStackParamList = {
-  Home: undefined;
-  Login: undefined;
-  // add other screens here
-};
-
-
 export default function RegisterScreen() {
-    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
- const {
+  // Set up React Hook Form with Yup validation
+  const {
     control,
     handleSubmit,
     formState: { errors },
   } = useForm<FormData>({
     resolver: yupResolver(schema),
   });
-
-  // 3. On submit
+  
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  
+  // Create user with Firebase on successful form submission
   const onSubmit = async (data: { email: string; password: string }) => {
   try {
     await createUserWithEmailAndPassword(auth, data.email, data.password);
 
-  } catch (error: any) {
+  } catch (err: any) {
     Toast.show({
       type: 'error',
       text1: 'Register failed',
-      text2: error.message,
+      text2: String(err?.message ?? 'Unknown error'),
     });
   }
 };
@@ -67,7 +66,7 @@ export default function RegisterScreen() {
     <View style={styles.container}>
       <Text style={styles.title}>Create Account</Text>
 
-      {/* Name input */}
+      {/* Name input field */}
       <Controller
         control={control}
         name="name"
@@ -84,7 +83,7 @@ export default function RegisterScreen() {
         )}
       />
 
-      {/* Email input */}
+      {/* Email input field */}
       <Controller
         control={control}
         name="email"
@@ -103,7 +102,7 @@ export default function RegisterScreen() {
         )}
       />
 
-      {/* Password input */}
+      {/* Password input field */}
       <Controller
         control={control}
         name="password"
@@ -121,7 +120,7 @@ export default function RegisterScreen() {
         )}
       />
 
-      {/* Confirm Password input */}
+      {/* Confirm Password input field */}
       <Controller
         control={control}
         name="confirmPassword"
@@ -139,9 +138,12 @@ export default function RegisterScreen() {
         )}
       />
 
+      {/* Submit register form button*/}
       <TouchableOpacity style={styles.button} onPress={handleSubmit(onSubmit)}>
         <Text style={styles.buttonText}>Register</Text>
       </TouchableOpacity>
+
+      {/* Link to login screen */}
       <TouchableOpacity onPress={() => navigation.navigate('Login')}>
               <Text style={styles.loginText}>Already have an account? <Text style={styles.loginLink}>Login</Text></Text>
             </TouchableOpacity>

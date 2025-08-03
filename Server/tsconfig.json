@@ -12,11 +12,8 @@
     "skipLibCheck": true,
     "noImplicitAny": true,
     "allowJs": true,
-    "paths": {
-      "ml-knn": ["./src/types/ml-knn"]
-    }
   },
-  "include": ["src","src/tests", "src/types/express", "src/types/ml-knn"],
+  "include": ["src", "src/types/express"],
   "exclude": ["node_modules"]
 }
 

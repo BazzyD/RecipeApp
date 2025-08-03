@@ -3,8 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import SideMenu from './SideMenu';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
-
-import { auth } from '../firebase/config';
 import { useAuthStore } from '../firebase/useAuthStore';
 type AppLayoutProps = {
   children: React.ReactNode;
@@ -14,31 +12,37 @@ type RootStackParamList = {
   Home: undefined;
 };
 export default function AppLayout({ children }: AppLayoutProps) {
+
   const [menuOpen, setMenuOpen] = useState(false);
   const user = useAuthStore((state) => state.user);
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+
   return (
+
     <View style={styles.container}>
-      {/* Header */}
+      {/* Top menu button */}
       <View style={styles.header}>
+        {/* Hamburger  menu button */}
         <TouchableOpacity onPress={() => setMenuOpen(true)}>
           <Text style={styles.menu}>☰</Text>
         </TouchableOpacity>
+
+        {/* App logo and title, navigates to Home on press */}
         <View style={styles.logoContainer}>
           <TouchableOpacity style={styles.logoContainer} onPress={() => {
-            if(user)
-              navigation.navigate('Home')
-          }
-            }>
-            {/* Replace with your logo image if needed */}
+            if (user) navigation.navigate('Home')
+          }}
+          >
             <Image source={require('../../assets/icon.png')} style={styles.logo} />
             <Text style={styles.title}>Recipe Matcher</Text>
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* Content area */}
+      {/* Main content area */}
       <View style={styles.content}>{children}</View>
+
+      {/* Side menu overlay */}
       {menuOpen && <SideMenu onClose={() => setMenuOpen(false)} />}
     </View>
   );

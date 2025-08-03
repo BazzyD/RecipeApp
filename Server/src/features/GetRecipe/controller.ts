@@ -1,18 +1,35 @@
-import { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
+import { authenticateFirebase } from '../../shared/middleware/authenticationFirebase';
+
 import { GetRecipe } from './service';
 
-export async function getRecipeController(req: Request, res: Response) {
+const router = express.Router();
+
+/**
+ * Controller to get a recipe by its ID from the database.
+ * Requires authentication and a valid recipeId query parameter.
+ */
+const getRecipeController = async (req: Request, res: Response) => {
+  
   const recipeId = req.query.recipeId as string;
 
-  if (!recipeId) {
-    return res.status(400).json({ error: 'Recipe indentifiction Error' });
+  // Validate query parameter
+  if (!recipeId?.trim()) {
+     res.status(400).json({ error: 'Missing or invalid recipeId' });
+     return;
   }
-
-
+  
+// Fetch recipe from database
   try {
     const result = await GetRecipe(recipeId);
-    return res.status(200).json(result);
+    res.status(200).json(result);
+
   } catch (err: any) {
-    return res.status(500).json({ error: err.message || 'Something went wrong' });
+    res.status(500).json({ error: err.message || 'Something went wrong' });
   }
-}
+};
+
+// Protected route: GET /api/recipe?recipeId=...
+router.get('/recipe', authenticateFirebase, getRecipeController);
+
+export default router;

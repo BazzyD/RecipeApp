@@ -1,40 +1,50 @@
 import { SearchRepository } from './repository';
-import { findSimilarRecipes } from './utilities/RecipeKNN';
+import { findSimilarRecipes } from './KNN/RecipeKNN';
 
-type VectorRecipe = {
-    id: string;
-    ingredients: string[];
-};
-
-
-type Recipe = {
-    id: string;
-    url: string;
-    title: string;
-    image: string;
-};
+/**
+ * Service to find similar recipes using KNN.
+ * - Validates the given recipeId
+ * - Retrieves all recipes excluding the target
+ * - Uses KNN to compute the top-K similar recipes
+ * - Returns the recommended recipes
+ */
 
 export async function SearchRecipe(recipeId: string) {
+
+  // Validate input early
+  if (!recipeId) {
+    throw new Error('Recipe identification error');
+  }
+
   const repo = new SearchRepository();
+
+  // Ensure target recipe exists
   if (await repo.exists(recipeId)) {
 
+    // Get target recipe and candidates
+    const { targetRecipe, recipes } = await repo.getAll(recipeId);
 
-    //get all recipes
-    let { targetRecipe, recipes } = await repo.getAll(recipeId);
-    targetRecipe = targetRecipe as VectorRecipe;
-    if (!targetRecipe || !recipes || recipes.length === 0) {
+    if (!targetRecipe) {
       throw new Error('Recipe does not exist');
     }
-    //find the closest recipes
+
+    if (!recipes || recipes.length === 0) {
+      throw new Error('error fetching recipes for comperission');
+    }
+
     try {
-      const RecommendationIds = findSimilarRecipes(targetRecipe, recipes, 10);
-      const recommendations = await repo.getRecipesById(RecommendationIds);
+      // Find most similar recipe IDs
+      const recommendationIds = findSimilarRecipes(targetRecipe, recipes, 10);
+
+      // Fetch full recipe data for recommendations
+      const recommendations = await repo.getRecipesById(recommendationIds);
       return recommendations;
-    } catch (e) {
-      throw new Error('KNN algorithem error');
+
+    } catch (err: any) {
+      throw new Error(err.message || 'KNN algorithm error');
     }
 
   }
-  // fallback if somehow missing:
-  throw new Error('Recipe exists but could not be fetched');
+  // Fallback if recipe not found
+  throw new Error('Recipe could not be fetched');
 }

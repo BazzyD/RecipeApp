@@ -3,15 +3,15 @@ import { User } from 'firebase/auth';
 import axios from 'axios';
 
 
+//const BASE_URL = 'http://10.0.0.10:3000';
+const BASE_URL = 'https://a99f75027c3f.ngrok-free.app';
 
-const BASE_URL = 'https://4d38efb49ce2.ngrok-free.app';
-
-
-
-export const getRecipeById = async (recipeId: string) => {
+/**
+ * Builds headers including authorization if user is signed in.
+ */
+const getAuthHeaders = async (): Promise<Record<string, string>> => {
   const user: User | null = useAuthStore.getState().user;
-
-  const headers: any = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
 
@@ -19,59 +19,60 @@ export const getRecipeById = async (recipeId: string) => {
     const idToken = await user.getIdToken();
     headers['authorization'] = `Bearer ${idToken}`;
   }
-  const response = await axios.get(
-    `${BASE_URL}/api/recipe?recipeId=${recipeId}`,
-    { 
+
+  return headers;
+};
+
+/**
+ * Fetch a single recipe by its ID
+ */
+export const getRecipeById = async (recipeId: string) => {
+  const headers = await getAuthHeaders();
+  try {
+  const response = await axios.get(`${BASE_URL}/api/recipe`, {
+      params: { recipeId },
       headers,
-      timeout: 10000 
-    }
-  );
+      timeout: 10000,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 
-  // Success: response.data contains the JSON
-  return response.data;
-
-
-}
 
 export const uploadRecipeFromWeb = async (url: string) => {
-  const user: User | null = useAuthStore.getState().user;
+  const headers = await getAuthHeaders();
 
-  const headers: any = {'Content-Type': 'application/json' };
-
-  if (user) {
-    const idToken = await user.getIdToken();
-    headers['authorization'] = `Bearer ${idToken}`;
+  try {
+    const response = await axios.post(
+      `${BASE_URL}/api/upload`,
+      { url },
+      {
+        headers,
+        timeout: 10000,
+      }
+    );
+    return response.data;
+  } catch (error) {
+    throw error;
   }
+};
 
-  const response = await axios.post(
-    `${BASE_URL}/api/upload`,
-    { url },
-    { 
-      headers,
-      timeout: 10000 
-    }
-  );
-
-  return response.data;
-}
-
+/**
+ * Retrieves similar recipes based on a given recipe ID
+ */
 export const searchRecipes = async (recipeId: string) => {
-  const user: User | null = useAuthStore.getState().user;
+  const headers = await getAuthHeaders();
 
-  const headers: any = {
-    'Content-Type': 'application/json',
-  };
-
-  if (user) {
-    const idToken = await user.getIdToken();
-    headers['authorization'] = `Bearer ${idToken}`;
+   try {
+    const response = await axios.get(`${BASE_URL}/api/search`, {
+      params: { recipeId },
+      headers,
+      timeout: 50000,
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
   }
-  const response = await axios.get(
-    `${BASE_URL}/api/search?recipeId=${recipeId}`,
-    { headers,
-      timeout: 20000 }
-  );
-
-  return response.data;
-
-}
+};

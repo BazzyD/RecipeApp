@@ -17,86 +17,91 @@ type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   Home: undefined;
-  // add other screens here
 };
 
+// Define validation schema using Yup
 export default function LoginScreen() {
-    const schema = yup.object().shape({
-  email: yup.string().email('Invalid email').required('Email is required'),
-  password: yup.string().required('Password is required'),
-});
+  const schema = yup.object().shape({
+    email: yup.string().email('Invalid email').required('Email is required'),
+    password: yup.string().required('Password is required'),
+  });
 
+  // Set up React Hook Form with Yup validation
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const {
-  control,
-  handleSubmit,
-  formState: { errors },
-} = useForm({
-  resolver: yupResolver(schema),
-});
 
+   // Handle login logic with Firebase Auth
   const handleLogin = async (data: { email: string; password: string }) => {
-  try {
-    await signInWithEmailAndPassword(auth, data.email, data.password);
-    navigation.navigate('Home'); // or wherever you want to redirect
-  } catch (error: any) {
-    Toast.show({
-      type: 'error',
-      text1: 'Login failed',
-      text2: error.message,
-    });
-  }
-};
+    try {
+      await signInWithEmailAndPassword(auth, data.email, data.password);
+    } catch (err: any) {
+      Toast.show({
+        type: 'error',
+        text1: 'Login failed',
+        text2: String(err?.message ?? 'Unknown error'),
+      });
+    }
+  };
 
   return (
-        <AppLayout>
-    <View style={styles.container}>
-      <Text style={styles.title}>Welcome Back</Text>
+    <AppLayout>
+      <View style={styles.container}>
+        <Text style={styles.title}>Welcome Back</Text>
 
-      <Controller
-  control={control}
-  name="email"
-  render={({ field: { onChange, value } }) => (
-    <>
-      <TextInput
-        placeholder="Email"
-        style={[styles.input, errors.email && styles.inputError]}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={value}
-        onChangeText={onChange}
-      />
-      {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
-    </>
-  )}
-/>
+{/* Email Input Field */}
+        <Controller
+          control={control}
+          name="email"
+          render={({ field: { onChange, value } }) => (
+            <>
+              <TextInput
+                placeholder="Email"
+                style={[styles.input, errors.email && styles.inputError]}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                value={value}
+                onChangeText={onChange}
+              />
+              {errors.email && <Text style={styles.errorText}>{errors.email.message}</Text>}
+            </>
+          )}
+        />
 
-<Controller
-  control={control}
-  name="password"
-  render={({ field: { onChange, value } }) => (
-    <>
-      <TextInput
-        placeholder="Password"
-        style={[styles.input, errors.password && styles.inputError]}
-        secureTextEntry
-        value={value}
-        onChangeText={onChange}
-      />
-      {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
-    </>
-  )}
-/>
+{/* Password Input Field */}
+        <Controller
+          control={control}
+          name="password"
+          render={({ field: { onChange, value } }) => (
+            <>
+              <TextInput
+                placeholder="Password"
+                style={[styles.input, errors.password && styles.inputError]}
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+              />
+              {errors.password && <Text style={styles.errorText}>{errors.password.message}</Text>}
+            </>
+          )}
+        />
 
-      <TouchableOpacity style={styles.button} onPress={handleSubmit(handleLogin)}>
-        <Text style={styles.buttonText}>Login</Text>
-      </TouchableOpacity>
+{/* Submit Button */}
+        <TouchableOpacity style={styles.button} onPress={handleSubmit(handleLogin)}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={styles.registerText}>Don't have an account? <Text style={styles.registerLink}>Register</Text></Text>
-      </TouchableOpacity>
-    </View>
+{/* Navigation to Register screen */}
+        <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+          <Text style={styles.registerText}>Don't have an account? <Text style={styles.registerLink}>Register</Text></Text>
+        </TouchableOpacity>
+      </View>
     </AppLayout>
   );
 }
@@ -134,13 +139,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   inputError: {
-  borderColor: 'blue',
-},
-errorText: {
-  color: 'black',
-  marginBottom: 10,
-  marginLeft: 5,
-},
+    borderColor: 'blue',
+  },
+  errorText: {
+    color: 'black',
+    marginBottom: 10,
+    marginLeft: 5,
+  },
   registerText: {
     marginTop: 20,
     textAlign: 'center',

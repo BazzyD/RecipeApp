@@ -1,18 +1,35 @@
-import { Request, Response } from 'express';
+import express, { Request, Response } from 'express';
+import { authenticateFirebase } from '../../shared/middleware/authenticationFirebase';
+
 import { SearchRecipe } from './service';
 
-export async function searchRecipeController(req: Request, res: Response) {
+const router = express.Router();
+
+/**
+ * Controller to search for recipes similar to a given recipeId.
+ * Requires authentication and a valid recipeId query parameter.
+ */
+const searchRecipeController = async (req: Request, res: Response) => {
+
   const recipeId = req.query.recipeId as string;
 
-  if (!recipeId) {
-    return res.status(400).json({ error: 'Recipe indentifiction Error' });
+  // Validate query parameter
+  if (!recipeId?.trim()) {
+    res.status(400).json({ error: 'Missing or invalid recipeId' });
+    return;
   }
 
-
+  // Fetch similar recipes from the database
   try {
     const result = await SearchRecipe(recipeId);
-    return res.status(200).json(result);
+    res.status(200).json(result);
+
   } catch (err: any) {
-    return res.status(500).json({ error: err.message || 'Something went wrong' });
+    res.status(500).json({ error: err.message || 'Something went wrong' });
   }
 }
+
+// Protected route: GET /api/search?recipeId=...
+router.get('/search', authenticateFirebase, searchRecipeController);
+
+export default router;

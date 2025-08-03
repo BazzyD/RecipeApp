@@ -13,12 +13,14 @@ type RootStackParamList = {
 export default function UploadRecipeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+  // Navigates to the screen where user can paste a recipe URL
   const handleUploadFromWeb = () => {
     navigation.navigate('UploadFromWeb');
   };
 
   return (
     <AppLayout>
+      {/* Top button that leads to web-based upload */}
       <View style={styles.topButtonContainer}>
         <TouchableOpacity style={styles.webButton} onPress={handleUploadFromWeb}>
           <Ionicons name="globe-outline" size={20} color="#333" />
@@ -26,6 +28,7 @@ export default function UploadRecipeScreen() {
         </TouchableOpacity>
       </View>
 
+{/* Placeholder for future upload options or content */}
       <View style={styles.container}>
         <Text>Upload Recipe</Text>
       </View>

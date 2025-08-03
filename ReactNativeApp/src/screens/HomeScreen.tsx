@@ -17,6 +17,7 @@ export default function HomeScreen({}: any) {
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
 
+  // Navigates to the upload Rcipe screen
   const handleAddPress = () => {
     navigation.navigate('UploadRecipe'); 
   };
@@ -25,6 +26,7 @@ export default function HomeScreen({}: any) {
     <AppLayout>
       <Text>🏠 Home Screen</Text>
       <View style={styles.container}>
+         {/* Add new recipe button */}
   <TouchableOpacity style={styles.addButton} onPress={handleAddPress}>
     <Text style={styles.addButtonText}>+</Text>
   </TouchableOpacity>
@@ -36,8 +38,8 @@ export default function HomeScreen({}: any) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',  // centers vertically
-    alignItems: 'center',      // centers horizontally
+    justifyContent: 'center', 
+    alignItems: 'center',     
 
   },
   addButton: {

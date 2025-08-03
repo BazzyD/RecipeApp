@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, Image, FlatList, StyleSheet, Pressable  } from 'react-native';
+import { Text, Image, FlatList, StyleSheet, Pressable } from 'react-native';
 import AppLayout from '../components/AppLayout';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
@@ -14,42 +14,49 @@ type RootStackParamList = {
   ShowRecipe: { recipe: any };
 };
 
-const RecipeCard = ({ title, image, onPress }: { title: string; image: string; onPress: () => void}) => (
+// Single recipe card component (used in FlatList)
+const RecipeCard = ({ title, image, onPress }: { title: string; image: string; onPress: () => void }) => (
   <Pressable onPress={onPress} style={styles.card}>
     <Image source={{ uri: image }} style={styles.image} />
     <Text style={styles.title}>{title}</Text>
   </Pressable>
 );
-export default function RecipesScreen() {
-  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-const route = useRoute();
-  const { recipes } = route.params as { recipes: { id: string, title: string, image: string }[] };
 
-   return (
+export default function RecipesScreen() {
+
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const route = useRoute();
+
+  // List of recipe previews passed via navigation
+const { recipes = [] } = route.params as { recipes?: { id: string; title: string; image: string }[] } || {};
+
+
+  return (
     <AppLayout>
-    <FlatList
-      data={recipes}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({ item }) => (
-  <RecipeCard
-    title={item.title}
-    image={item.image}
-    onPress={async () => {
-      try {
-        const recipe = await getRecipeById(item.id);
-        navigation.navigate('ShowRecipe', { recipe });
-      } catch (error : any) {
-        Toast.show({
-              type: 'error',
-              text1: 'Login failed',
-              text2: error.message,
-            });
-      }
-    }}
-  />
-)}
-      contentContainerStyle={styles.list}
-    />
+      <FlatList
+        data={recipes}
+        keyExtractor={item => item.id.toString()}
+        renderItem={({ item }) => (
+          <RecipeCard
+            title={item.title}
+            image={item.image}
+            onPress={async () => {
+              try {
+                // Fetch full recipe details before navigating
+                const recipe = await getRecipeById(item.id);
+                navigation.navigate('ShowRecipe', { recipe });
+              } catch (err: any) {
+                Toast.show({
+                  type: 'error',
+                  text1: 'Failed to load recipe',
+                  text2: String(err?.message ?? 'Unknown error'),
+                });
+              }
+            }}
+          />
+        )}
+        contentContainerStyle={styles.list}
+      />
     </AppLayout>
 
   );

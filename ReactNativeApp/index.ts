@@ -1,4 +1,7 @@
-import { registerRootComponent } from 'expo';
+// Main entry point of the mobile app. tell React Native which component to render first.
+
+
+import { registerRootComponent } from 'expo';   
 
 import App from './App';
 

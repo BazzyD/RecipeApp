@@ -1,3 +1,4 @@
+// Configuration file for Metro (React Native compiler)
 // Learn more https://docs.expo.io/guides/customizing-metro
 const { getDefaultConfig } = require('expo/metro-config');
 
