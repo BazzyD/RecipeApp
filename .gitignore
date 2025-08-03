@@ -3,10 +3,9 @@
 
 # dependencies
     
-ReactNativeApp/app.json
-ReactNativeApp/eas.json
 
-ReactNativeApp/src/firebase/config.ts
+
+
 Server/src/shared/firebase/serviceAccountKey.json
 node_modules/
 

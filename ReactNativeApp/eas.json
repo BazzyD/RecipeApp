@@ -15,7 +15,10 @@
       }
     },
     "production": {
-      "autoIncrement": true
+      "autoIncrement": true,
+      "env": {
+        "EXPO_PUBLIC_FIREBASE_API_KEY": "your_value_here"
+      }
     }
   },
   "submit": {

@@ -3,12 +3,12 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 const firebaseConfig = {
-  apiKey: "AIzaSyDlfUX21FQcvbo23WRK3IAbQLYmd_076VM",
-  authDomain: "recipeapp-56bba.firebaseapp.com",
-  projectId: "recipeapp-56bba",
-  storageBucket: "recipeapp-56bba.firebasestorage.app",
-  messagingSenderId: "307239307589",
-  appId: "1:307239307589:web:a02db90fd0dc645241962c"
+   apiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
+  authDomain: `${process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  projectId: process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: `${process.env.EXPO_PUBLIC_FIREBASE_PROJECT_ID}.appspot.com`,
+  messagingSenderId: process.env.EXPO_PUBLIC_FIREBASE_SENDER_ID,
+  appId: process.env.EXPO_PUBLIC_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
