@@ -27,7 +27,7 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.bazzyd.RecipApp"
+      "package": "com.bazzyd.RecipeApp"
     },
     "web": {
       "favicon": "./assets/favicon.png"
