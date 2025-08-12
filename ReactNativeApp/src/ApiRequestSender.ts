@@ -4,7 +4,7 @@ import axios from 'axios';
 
 
 //const BASE_URL = 'http://10.0.0.10:3000';
-const BASE_URL = 'https://a99f75027c3f.ngrok-free.app';
+const BASE_URL = ' https://a36432cbf2db.ngrok-free.app';
 
 /**
  * Builds headers including authorization if user is signed in.
